@@ -1,0 +1,9 @@
+{
+  "name": "family-shelf",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "node --test engine/engine.test.ts"
+  }
+}

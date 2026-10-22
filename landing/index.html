@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Family Shelf · One scan, every person in your family</title>
+<meta name="description" content="Scan a skincare product and see whether it fits each person in your family: tweens, teens, pregnancy, sensitive skin.">
+<style>
+  :root {
+    --bg: #faf6ef; --card: #fffdf9; --ink: #1f2a24; --muted: #5e6a63; --line: #e6dfd2; --brand: #2f5d4a;
+    --good: #2f7a4f; --care: #a8740a; --notrec: #b4531f; --doctor: #2f5f9e;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 var(--sans); }
+  main, header, footer { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  header { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; }
+  .mark { font: 600 20px var(--serif); color: var(--brand); text-decoration: none; }
+  .mark span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--brand); margin-right: 8px; }
+  h1, h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; }
+  h1 { font-size: clamp(34px, 6vw, 54px); margin: 0 0 16px; }
+  h2 { font-size: clamp(26px, 4vw, 34px); margin: 0 0 20px; }
+  .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; padding: 56px 0 72px; }
+  .lede { font-size: 19px; color: var(--muted); max-width: 34em; }
+  .note { font-size: 14px; color: var(--muted); margin-top: 10px; }
+  .btn { display: inline-block; background: var(--brand); color: #fff; text-decoration: none; font-weight: 600;
+         padding: 14px 22px; border-radius: 10px; margin-top: 12px; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:focus-visible { outline: 3px solid var(--care); outline-offset: 2px; }
+
+  .result { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px;
+            box-shadow: 0 18px 40px -24px rgba(31, 42, 36, .35); }
+  .product { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .product b { display: block; font-size: 18px; }
+  .product small, .row small { color: var(--muted); font-size: 13px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .row:last-of-type { border-bottom: 0; }
+  .chip { font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 999px; white-space: nowrap; color: #fff; }
+  .good { background: var(--good); } .care { background: var(--care); } .notrec { background: var(--notrec); } .doctor { background: var(--doctor); }
+  .disc { font-size: 12px; color: var(--muted); margin: 10px 0 0; }
+
+  section { padding: 56px 0; border-top: 1px solid var(--line); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .grid h3 { font-size: 18px; margin: 0 0 6px; }
+  .grid p { margin: 0; color: var(--muted); }
+  .num { font: 600 15px var(--serif); color: var(--brand); }
+  .price { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px; max-width: 520px; }
+  .price .amt { font: 600 44px var(--serif); }
+  .price .amt s { font-size: 22px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .price ul { padding-left: 20px; color: var(--muted); }
+  details { border-bottom: 1px solid var(--line); padding: 14px 0; max-width: 720px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 8px 0 0; }
+  footer { padding: 32px 16px 48px; font-size: 13px; color: var(--muted); }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; padding: 32px 0 48px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="mark" href="./"><span></span>Family Shelf</a>
+  <nav style="display:flex;gap:18px">
+    <a href="/app/" style="color:var(--brand);font-weight:600;text-decoration:none">Try it</a>
+    <a href="#join" style="color:var(--brand);font-weight:600;text-decoration:none">Founding offer</a>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <div>
+      <h1 id="headline">I scanned my 11-year-old's Sephora haul.</h1>
+      <p class="lede" id="lede">Half of it was made for adult skin. Family Shelf reads the ingredient list and tells you which products fit your tween, and why.</p>
+      <a class="btn cta" href="#join">Become a founding member · $19.99</a>
+      <p class="note" id="hook-note">iPhone app, launching spring 2027. Full refund if we don't launch.</p>
+    </div>
+
+    <!-- Sample output. Verdicts match engine test "the landing-page sample". -->
+    <div class="result" aria-label="Sample scan result">
+      <div class="product">
+        <div><b>Overnight Glow Serum</b><small>Retinol · Glycolic acid · Fragrance</small></div>
+        <small>Sample scan</small>
+      </div>
+      <div class="row"><div>Maya <small>· age 11</small></div><span class="chip notrec">🟠 Not recommended for this age</span></div>
+      <div class="row"><div>Leo <small>· age 15</small></div><span class="chip care">🟡 Use with care</span></div>
+      <div class="row"><div>Mom <small>· pregnant</small></div><span class="chip doctor">🔵 Ask your doctor</span></div>
+      <div class="row"><div>Dad <small>· adult</small></div><span class="chip good">✅ Good fit</span></div>
+      <p class="disc">Each flag explains which ingredient caused it and cites its source. Informational only. Not medical advice.</p>
+    </div>
+  </div>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="grid">
+      <div><div class="num">01</div><h3>Add your family</h3><p>A nickname and an age range for each person. Add pregnancy or skin concerns if you like. No names, no photos.</p></div>
+      <div><div class="num">02</div><h3>Scan any product</h3><p>Scan the barcode, or snap the ingredient list in the store aisle or at home.</p></div>
+      <div><div class="num">03</div><h3>See a verdict per person</h3><p>One of four plain answers for each family member, with the ingredient and the reason behind it.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Built to be trusted</h2>
+    <div class="grid">
+      <div><h3>Rules, not guesses</h3><p>Verdicts come from fixed rules based on published guidance. AI only reads the label. Before launch, a board-certified US dermatologist will review the rules.</p></div>
+      <div><h3>No scare words</h3><p>We say "good fit" or "use with care", never "toxic". Every flag shows its source, so you can check it yourself.</p></div>
+      <div><h3>Profiles stay on your phone</h3><p>Ages, pregnancy and skin concerns never leave your device. We don't sell data or take money from brands.</p></div>
+    </div>
+  </section>
+
+  <section id="join">
+    <h2>Founding member offer</h2>
+    <div class="price">
+      <div class="amt">$19.99 <s>$39.99</s></div>
+      <p style="margin:4px 0 0;color:var(--muted)">Your first year of Family Pro, locked in.</p>
+      <ul>
+        <li>Unlimited scans</li>
+        <li>Up to 6 family members</li>
+        <li>Reasons and sources behind every verdict</li>
+        <li>Morning and evening routine check</li>
+        <li>Full refund if the app doesn't launch</li>
+      </ul>
+      <a class="btn cta" href="#">Reserve my spot · $19.99</a>
+      <p class="note">Secure checkout by Stripe. Sign-up is for parents 18+.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <details><summary>Is this medical advice?</summary><p>No. Family Shelf gives ingredient information to help you choose products. For skin conditions, pregnancy or medications, talk to your doctor.</p></details>
+    <details><summary>Can my teen use it on their own?</summary><p>Not yet. Accounts are for parents 18+. Your kids are profiles under your account, not users.</p></details>
+    <details><summary>What ages do you support?</summary><p>At launch: ages 8–12, 13–17 and adults, including pregnancy. Baby and toddler rules are next, and founding members get them first.</p></details>
+    <details><summary>When do I get the app?</summary><p>We plan to launch on iPhone in spring 2027. Founding members get early TestFlight access. If we don't launch, you get a full refund.</p></details>
+  </section>
+</main>
+
+<footer>
+  Informational only. Not medical advice. · © 2026 PearlWren · <a href="mailto:hello@pearlwren.com" style="color:inherit">hello@pearlwren.com</a>
+</footer>
+
+<script>
+  // Ads link to ?h=a|b|c. The hook rides into Stripe as client_reference_id, so presales per hook
+  // show up in the Stripe dashboard. Ad spend per hook comes from the ad platform.
+  const CHECKOUT = 'https://buy.stripe.com/REPLACE_WITH_PAYMENT_LINK'
+  const HOOKS = {
+    a: ["I scanned my 11-year-old's Sephora haul.",
+        "Half of it was made for adult skin. Family Shelf reads the ingredient list and tells you which products fit your tween, and why."],
+    b: ['One scan. A verdict for every person in your family.',
+        'The same serum can be a good fit for you and the wrong pick for your 11-year-old. Family Shelf checks each product against everyone at home.'],
+    c: ['I scanned every baby product in our nursery.',
+        'Family Shelf checks each product against every person at home, from your toddler to you. Baby and toddler rules are coming next; founding members get them first.'],
+  }
+  const h = new URLSearchParams(location.search).get('h')
+  const hook = HOOKS[h] ? h : 'a'
+  ;[document.getElementById('headline').textContent, document.getElementById('lede').textContent] = HOOKS[hook]
+  document.querySelector('#join .cta').href = CHECKOUT + '?client_reference_id=hook-' + hook
+</script>
+</body>
+</html>

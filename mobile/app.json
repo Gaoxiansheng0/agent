@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Family Shelf",
+    "slug": "family-shelf",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.pearlwren.familyshelf"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single",
+      "name": "Family Shelf"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Family Shelf uses the camera to scan barcodes and read ingredient labels.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Family Shelf uses your photos to read product ingredient labels.",
+          "cameraPermission": "Family Shelf uses the camera to scan barcodes and read ingredient labels.",
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "scheme": "familyshelf",
+    "experiments": {
+      "baseUrl": "/app"
+    }
+  }
+}
