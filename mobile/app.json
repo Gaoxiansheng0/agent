@@ -1,14 +1,18 @@
 {
   "expo": {
-    "name": "Family Shelf",
-    "slug": "family-shelf",
+    "name": "PearlKin",
+    "slug": "pearlkin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.pearlwren.familyshelf"
+      "bundleIdentifier": "com.pearlwren.pearlkin",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -17,12 +21,13 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.pearlwren.pearlkin"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "output": "single",
-      "name": "Family Shelf"
+      "name": "PearlKin"
     },
     "plugins": [
       "expo-router",
@@ -30,7 +35,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Family Shelf uses the camera to scan barcodes and read ingredient labels.",
+          "cameraPermission": "PearlKin uses the camera for your AI skin test and to scan product barcodes and ingredient labels. Photos are analyzed and not stored on our servers.",
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
@@ -38,13 +43,16 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Family Shelf uses your photos to read product ingredient labels.",
-          "cameraPermission": "Family Shelf uses the camera to scan barcodes and read ingredient labels.",
+          "photosPermission": "PearlKin uses a photo you choose for your AI skin test or to read a product's ingredient label.",
+          "cameraPermission": "PearlKin uses the camera for your AI skin test and to scan product barcodes and ingredient labels. Photos are analyzed and not stored on our servers.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-localization",
+      "expo-secure-store",
+      "expo-apple-authentication"
     ],
-    "scheme": "familyshelf",
+    "scheme": "pearlkin",
     "experiments": {
       "baseUrl": "/app"
     }

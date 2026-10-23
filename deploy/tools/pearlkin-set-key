@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Sets the DeepSeek API key used for label photo reading.
+exec pearlkin-set-secret DEEPSEEK_API_KEY

@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { normalize, checkProduct, checkRoutine, SEVERITY_ORDER, type Pack, type Member } from './engine.ts'
+import { normalize, checkProduct, checkRoutine, compareVersions, validatePack, type Pack, type Member } from './engine.ts'
 
 const pack: Pack = JSON.parse(readFileSync(new URL('./rule-pack.json', import.meta.url), 'utf8'))
 const YEAR = 2026
@@ -14,20 +14,22 @@ const family: Member[] = [
 ]
 
 test('rule pack integrity', () => {
-  const groups = new Set(pack.groups.map(g => g.id))
-  const inci = new Set(pack.groups.flatMap(g => g.members))
-  for (const r of pack.rules) {
-    assert.ok(groups.has(r.group), `${r.id}: unknown group ${r.group}`)
-    assert.ok(pack.messages[r.message_key], `${r.id}: missing message ${r.message_key}`)
-    assert.ok(SEVERITY_ORDER.includes(r.severity), `${r.id}: bad severity`)
-    assert.ok(r.sources.length, `${r.id}: every warning needs a source (plan 1.3)`)
-  }
-  for (const r of pack.routine_rules) {
-    assert.ok(pack.messages[r.message_key], `${r.id}: missing message`)
-    for (const g of [...(r.groups ?? []), ...(r.with ?? [])]) assert.ok(groups.has(g), `${r.id}: unknown group ${g}`)
-  }
-  for (const [a, t] of Object.entries(pack.aliases)) assert.ok(inci.has(t), `alias ${a} -> unknown INCI ${t}`)
-  assert.ok(!/\b(toxic|safe|dangerous)\b/i.test(Object.values(pack.messages).join(' ')), 'no scare words (plan 1.3)')
+  assert.deepEqual(validatePack(pack), [])
+  const broken = structuredClone(pack)
+  broken.rules[0].group = 'nope'
+  broken.aliases['Water'] = 'aqua'
+  broken.messages.no_ingredients = 'This is toxic.'
+  assert.deepEqual(validatePack(broken), [
+    `${pack.rules[0].id}: unknown group nope`,
+    'alias "Water" must be lowercase',
+    'no scare words: toxic / safe / dangerous (plan 1.3)',
+  ])
+})
+
+test('version compare', () => {
+  assert.equal(compareVersions('0.1.10', '0.1.9'), 1)
+  assert.equal(compareVersions('0.2.0', '0.2.0'), 0)
+  assert.equal(compareVersions('0.1.0', '1.0.0'), -1)
 })
 
 test('normalize cleans real-world label text', () => {
@@ -36,6 +38,12 @@ test('normalize cleans real-world label text', () => {
   assert.deepEqual(r.unknown, ['glitter dust'])
   // Mid-name parentheses, as Open Beauty Facts and OCR return them
   assert.deepEqual(normalize('Lavandula Angustifolia (Lavender) Oil, LAVENDER (LAVANDULA ANGUSTIFOLIA) OIL/EXTRACT', pack).inci, ['lavandula angustifolia oil'])
+})
+
+test('normalize reads Chinese labels: full-width punctuation, headings, Latin in parentheses', () => {
+  const r = normalize('全成分：水（AQUA）、甘油、PEG-100 硬脂酸酯、1,2-己二醇，椰子（COCOS NUCIFERA）油；视黄醇、某某专利成分。可能含有：CI 77891', pack)
+  assert.deepEqual(r.inci, ['aqua', 'glycerin', 'peg-100 stearate', '1,2-hexanediol', 'cocos nucifera oil', 'retinol', 'ci 77891'])
+  assert.deepEqual(r.unknown, ['某某专利成分'])
 })
 
 test('one product, a different verdict per family member (the landing-page sample)', () => {

@@ -1,102 +1,135 @@
-# Family Shelf
+# PearlKin
 
-扫一瓶护肤品，按家庭成员分别给出适配结论。完整计划见 [docs/dev-plan.md](docs/dev-plan.md)。
+AI 测肤 + 全家护肤品适配。拍一张自拍得到 10 项皮肤报告（肤质概况、黑眼圈、敏感、痘痘、色沉、细纹、黑头、油光、眼袋、毛孔），再记录家人和在用的产品，看每件产品适不适合每个人当前的状态，并由 AI 用已有产品排出早晚护肤流程。订阅制：3 天免费试用（需绑定付款方式），之后月付 $9.99 或年付 $29.99，自动续费，在手机系统的订阅设置里取消。
+
+线上：https://pearlkin.pearlwren.com（落地页）· `/app/`（App 网页版）· `/admin`（运营后台）
+
+### 用户流程
+注册（Apple 登录 / 邮箱验证码）→ 填自己的资料 → 拍照 → 选拍照条件（妆容、光线）→ 答题（后台「测肤问卷」配置）→ AI 分析 → 订阅页（付费墙开启时）→ 报告 → 产品架 / 家人 / AI 护肤流程。
+
+### 关键设计
+- 照片只在分析时传给 AI，服务器不保存；账号里只存分数、家人、产品。
+- 未满 13 岁的家人不做人脸分析（美国 COPPA），只检查产品。
+- 产品适不适合由规则引擎判断（可审核、可追溯），AI 只负责读图、写报告和排流程，不改结论。
+- 后台「设置 → 付费墙」关闭时所有功能免费（测试期）；打开后报告和 AI 流程需要订阅或后台赠送会员。
+- 测肤模型现在用 DeepSeek（`server/skin.ts`），以后换模型只改这一个文件。
+- 登录验证码：配了 `RESEND_API_KEY` 就发邮件；没配时显示在后台「用户」页（测试用）。
 
 ## 目录
 
 | 路径 | 内容 | 对应计划 |
 |---|---|---|
-| `landing/index.html` | 阶段 0 落地页：3 个钩子（`?h=a/b/c`）+ 创始会员预售按钮 | §9 阶段 0 |
-| `engine/rule-pack.json` | 规则包 v0.1（草稿）：成分组、别名表、成员规则、流程规则、英文文案 | §4 |
-| `engine/engine.ts` | 规则引擎：成分标准化 → 按成员给结论 → 流程体检。纯函数，以后原样放进 Expo App | §4、§5.1 |
-| `engine/engine.test.ts` | 自检：规则包完整性、标签清洗、按成员结论、流程规则 | |
-| `mobile/` | Expo App（SDK 58，expo-router）：家庭成员、扫码查库、拍照/粘贴成分表、按成员结果卡、产品架、流程体检 | §2.1、§3 |
-| `server/server.ts` | 拍照识别成分表的服务端代理：照片 → Claude（`claude-opus-5-5`）→ 结构化成分列表。只收照片，不存任何东西 | §5.1、§5.2 |
+| `landing/` | 落地页（3 个钩子 `?h=a/b/c`；预售链接和联系邮箱由后台配置，没填链接时自动变成等候名单）+ 隐私政策 `/privacy`、服务条款 `/terms` | §9 阶段 0 |
+| `engine/rule-pack.json` | 随 App 打包的规则包（之后的版本在后台发布，App 自动下载） | §4 |
+| `engine/engine.ts` | 规则引擎：成分标准化 → 按成员给结论 → 流程体检；规则包校验 `validatePack`。纯函数，App、服务端、后台试算共用 | §4、§5.1 |
+| `mobile/` | Expo App（SDK 58，expo-router） | §2.1、§3 |
+| `server/` | 服务端（Hono + node:sqlite）：拍照识别、匿名统计、报错、产品库、规则包下发、等候名单、Stripe 预售回调、运营后台 | §5 |
+| `server/admin/` | 运营后台网页（中文，纯 JS，无需构建） | |
+| `deploy/deploy.sh` | 一键部署；`deploy/tools/` 是装到服务器上的密钥/密码小工具 | |
+
+## 数据边界（隐私承诺）
+
+脸部照片只在分析时经过服务器和 DeepSeek，不落盘、不进数据库。账号下保存：邮箱或 Apple ID、测肤分数和说明、家人资料（昵称、出生年份、孕期/哺乳、皮肤情况）、产品架。用户可在 App「我的 → 删除账号」一键删除全部数据。匿名使用统计用设备上的随机编号。细节见 `landing/privacy.html`。
 
 ## 运行
 
-引擎测试（Node ≥ 22.18，无依赖）：
-
 ```bash
-npm test
+npm test                                   # 引擎测试
+cd server && npm install && npm test       # 服务端测试（14 个）
+cp .env.example .env.local                 # 本地开发：在 server/.env.local 写 ADMIN_PASSWORD_HASH 等
+npm run dev                                # http://localhost:3001/admin
+cd mobile && npx expo start                # App；按 w 看网页版
 ```
 
-App（在 iPhone 上装 **Expo Go**，和电脑连同一个 WiFi）：
-
-```bash
-cd mobile && npx expo start
-```
-
-终端里出现二维码后，用 iPhone 相机扫码打开。按 `w` 可以在浏览器里看网页版。
+后台密码的哈希可以这样生成：`node -e "import('./auth.ts').then(m=>console.log(m.hashPassword('你的密码')))"`（在 `server/` 下运行）。
 
 App 页面（`mobile/src/app/`）：
 
 | 文件 | 页面 |
 |---|---|
-| `family.tsx` | 首次引导 + 家庭成员（昵称、出生年份、孕期/哺乳、敏感肌/易长痘），最多 6 人 |
-| `index.tsx` | 首页：家庭产品架，每个产品显示每位成员的结论 |
-| `scan.tsx` | 扫条码 → 查 Open Beauty Facts；查不到自动切到"成分表"，可粘贴或用 iPhone 自带的"扫描文本"读标签 |
-| `product/[id].tsx` | 按成员结果卡：结论、原因、触发成分、来源；"谁在用"；成分说明；报错入口 |
-| `routine.tsx` | 流程体检：选成员、早/晚，勾选产品，检测重复活性、视黄醇+酸、缺防晒、步骤过多 |
+| `family.tsx` | 首次引导 + 家庭成员，最多 6 人（免费版上限由后台配置） |
+| `index.tsx` | 首页：家庭产品架，每个产品显示每位成员的结论；免费版显示本月剩余次数 |
+| `scan.tsx` | 扫条码 → 先查我们的产品库 → 再查 Open Beauty Facts；查不到切到成分表（拍照识别 / 粘贴），确认后的结果进入后台补录队列 |
+| `product/[id].tsx` | 按成员结果卡；免费版只看结论，原因和来源要订阅；报错入口 |
+| `report/[id].tsx` | 报错表单（只发产品信息和用户的说明） |
+| `routine.tsx` | 流程体检（免费版是否开放由后台配置） |
+| `paywall.tsx` | 订阅页（RevenueCat；网页版显示「去 iPhone App 订阅」） |
+| `settings.tsx` | 语言、订阅状态、恢复购买、兑换码、删除本机数据、隐私政策、服务条款 |
 
-数据只存在手机本地（AsyncStorage），只有条形码会发给 Open Beauty Facts，只有标签照片会发给我们的识别服务。结论每次打开都用当前规则包重新计算。
+多语言：English、简体中文、繁體中文、Español，默认跟随手机语言，设置页可切换。界面文字在 `mobile/src/lib/i18n.tsx`（每种语言必须补全所有词条，类型检查会报缺）；规则解释在规则包的 `translations` 里，后台「规则包 → 文案」按语言编辑，缺翻译时显示英文原文。
 
-## 拍照识别成分表（server/）
+## 运营后台（/admin）
 
-流程：App 拍照或选图 → 压缩到长边 2000 px 的 JPEG（约 1 MB 以内）→ `POST /api/ocr` → 服务端调用 Claude 只做"照抄成分表" → 返回 `{found, product_name, ingredients[], unreadable}` → App 把结果填进成分表输入框，**用户核对后**才点"Check"（计划风险 R5）。安全结论仍然只由手机上的规则引擎给出（§4.1）。
+| 页面 | 用途 |
+|---|---|
+| 概览 | 关键数字 + 上线清单（还差哪些配置） |
+| 落地页与预售 | 按钩子比较访客、点击、等候名单、预售；预售订单（Stripe 回调自动写入）和 App Store 优惠码发放 |
+| App 使用情况 | 新用户漏斗、每台设备每周查几个产品（止损线 G3）、条形码命中率、付费墙和购买、报错率、App 崩溃 |
+| 拍照识别 | 每日调用、失败原因、花费、每日上限、可疑 IP |
+| 用户报错 | 处理状态和备注；一键修正到产品库、用规则包试算 |
+| 产品库与补录 | 审核用户补录的产品；手动维护产品库（App 扫码优先查这里） |
+| 未识别成分 | 按设备数排序；映射成别名 / 加入成分组 / 忽略，改动进规则包草稿 |
+| 规则包 | 编辑规则、成分组、别名、文案；医生签字（改动后签字自动清空）；试算对比草稿与线上；校验通过才能发布；发布历史可回滚 |
+| 设置 | 预售链接、App Store 链接、付费墙开关和免费版额度、识别每日上限、价格；各密钥是否已配置 |
 
-服务端防护：
-- 照片上限 8 MB，只接受 JPEG/PNG/WebP
-- 同一 IP 每小时最多 30 次（内存计数，重启清零）
-- 可选 `APP_TOKEN`：设置后，请求头必须带 `x-app-token`。这个令牌会打包进 App，只能挡住随手滥用；真正的门槛等接入订阅（RevenueCat）后，改为按订阅资格放行
-- 模型拒绝时自动换备用模型（`fallbacks: "default"`）；仍然拒绝则返回"读不了这张照片"
+## 订阅（RevenueCat）
 
-本地运行：
+为什么用 RevenueCat 而不是自己做：苹果内购的收据验证、续费、退款、家庭共享都由它处理，收入不高时免费，自带收入/留存报表。付费墙价格实验也用它的 Experiments，不再单独接 Superwall。
+
+- 权益（entitlement）标识：`pro`；产品：年付 $29.99（主推，比月付省 75%）、月付 $9.99，都带 3 天免费试用。价格和试用期在 App Store Connect（以及以后的 Google Play）里设置，App 里显示的价格以商店为准。
+- App 里的公开密钥通过环境变量 `EXPO_PUBLIC_REVENUECAT_IOS_KEY` 注入（见 `mobile/.env.example`）。没配密钥时 App 不显示购买按钮。
+- 后台「设置 → 付费墙」默认关闭：关闭时所有功能免费，保证在订阅配好之前不会锁住任何用户。
+- 创始会员：网站预售付 $19.99 → 上架后在 App Store Connect 给年订阅生成优惠码（Offer Code），在后台预售列表里登记并发给每人，App 设置页「Redeem a code」兑换。
+
+真机测试和上架要用 EAS 构建（`mobile/eas.json` 已配好）：
 
 ```bash
-cd server && npm install && npm test
-ANTHROPIC_API_KEY=sk-ant-... HOST=0.0.0.0 npm start
+cd mobile
+npx eas-cli@latest login
+npx eas-cli@latest env:create --name EXPO_PUBLIC_APP_TOKEN --value <服务器 APP_TOKEN> --environment production --visibility sensitive
+npx eas-cli@latest env:create --name EXPO_PUBLIC_REVENUECAT_IOS_KEY --value appl_xxx --environment production --visibility plaintext
+npx eas-cli@latest build --profile development --platform ios   # 沙盒测试购买
+npx eas-cli@latest build --profile production --platform ios && npx eas-cli@latest submit --platform ios
 ```
 
-App 指向服务端（iPhone 上的 Expo Go 访问不到 `localhost`，要用 Mac 的局域网 IP，可用 `ipconfig getifaddr en0` 查）：
+## 拍照识别成分表
 
-```bash
-cd mobile && EXPO_PUBLIC_API_URL=http://<Mac的局域网IP>:3001 npx expo start
-```
+流程：App 拍照或选图 → 压缩到长边 2000 px 的 JPEG → `POST /api/ocr` → 服务端调用 DeepSeek（`deepseek-flash`，关闭思考模式）只做"照抄成分表" → App 把结果填进输入框，**用户核对后**才点"Check"（计划风险 R5）。安全结论只由规则引擎给出（§4.1）。
 
-成本估算：每张照片约 4–5 千输入 token，加上输出和思考，Opus 5.5 约 2–4 美分/次，和计划 §5.4 的"每次几美分"一致。准确率和 effort 档位要用计划阶段 1 的 100 张真实标签照片来测（目标 F1 ≥ 0.95）。
+防护：照片上限 8 MB；同一 IP 每小时 30 次；App 令牌 `x-app-token`；每日成功识别上限（后台可调）。实测每张约 700 输入 + 125 输出 token，约 $0.0004/次。
 
-## 部署：pearlkin.pearlwren.com（按《新项目上线规范》）
+## 部署：pearlkin.pearlwren.com
 
 | 地址 | 内容 | 服务器位置 |
 |---|---|---|
-| `/` | 落地页 | `/var/www/pearlkin` |
+| `/`、`/privacy`、`/terms` | 落地页和法律页面 | `/var/www/pearlkin` |
 | `/app/` | App 网页版 | `/var/www/pearlkin/app` |
-| `/api/*` | 拍照识别服务 | `/opt/pearlkin-server`，systemd `pearlkin-api`，端口 **3001** |
-
-一键部署（可重复运行）：
+| `/api/*`、`/admin` | 服务端和后台 | `/opt/pearlkin-server`，systemd `pearlkin-api`，端口 **3001** |
+| 数据库 | SQLite | `/var/lib/pearlkin/pearlkin.db`（部署不会覆盖） |
 
 ```bash
-APP_TOKEN=<与服务器 /etc/pearlkin-api.env 相同的值> ./deploy/deploy.sh
+bash deploy/deploy.sh      # 跑测试和类型检查 → 构建 → 上传 → 安装 → 更新 Caddy（校验通过才重载）→ 健康检查
 ```
 
-脚本依次：跑测试 → 构建网页版 → rsync 上传 → 安装识别服务（systemd 守护）→ 首次时追加 Caddy 站点块（先备份、校验通过才重载）→ 检查 `/api/health`。
+服务器上的小工具（在本机 PowerShell / Git Bash 里运行）：
 
-前提：
-- DNS：`pearlkin` A 记录 → 8.218.190.208（已配好）
-- 部署密钥：本机 `~/.ssh/pearlwren_deploy`，公钥加在服务器 admin 的 `~/.ssh/authorized_keys`
-- 服务器 Node ≥ 22.18
-- API key 手动写进服务器 `/etc/pearlkin-api.env`（`ANTHROPIC_API_KEY=...`，权限 600），然后 `sudo systemctl restart pearlkin-api`
-- 上线后在《新项目上线规范》的子域名登记表加一行，并过验收清单
+```bash
+ssh -t -i ~/.ssh/resume.pem root@8.218.190.208 pearlkin-admin-password                    # 设置后台密码
+ssh -t -i ~/.ssh/resume.pem root@8.218.190.208 pearlkin-set-key                           # 换 DeepSeek key
+ssh -t -i ~/.ssh/resume.pem root@8.218.190.208 pearlkin-set-secret STRIPE_WEBHOOK_SECRET  # Stripe 回调密钥
+```
 
-**投广告前必须改的：**
-- `landing/index.html` 里的 `CHECKOUT` 换成真实 Stripe Payment Link（$19.99）。钩子会作为 `client_reference_id` 带进 Stripe，按钩子统计预售单数，对照止损线 G0（30 单）。
+密钥都在服务器 `/etc/pearlkin-api.env`（权限 600）：`APP_TOKEN`、`SESSION_SECRET`（首次部署自动生成）、`DEEPSEEK_API_KEY`、`ADMIN_PASSWORD_HASH`、`STRIPE_WEBHOOK_SECRET`。
+
+**投广告前必须做的：**
+- 后台「设置」填 Stripe Payment Link（$19.99），并按设置页步骤配好 Webhook。
 - 落地页写了"不上线全额退款"和"spring 2027 上线"，这是承诺，确认能兑现再发。
 - 联系邮箱 `hello@pearlwren.com` 需要先开通。
+- `landing/privacy.html`、`terms.html` 是按现有功能写的初稿，正式收费前请律师过一遍（尤其是运营主体名称）。
 
 ## 规则包现状
 
-- 全部规则 `reviewed_by: null`，多数来源是 `TODO`。v1 上线前必须补齐来源并由皮肤科医生签字（§4.4）。
+- 全部规则 `reviewed_by: null`，多数来源是 `TODO`。v1 上线前必须补齐来源并由皮肤科医生签字（§4.4）——在后台「规则包」里补来源、签字、发布。
 - 严重级别排序按计划 §4.2：`good < care < not_recommended < ask_doctor`。
 - 标签里没有任何可识别成分时给 `care`，不给 `good`（§4.1 默认保守）。
 - "may contain" 后的成分会保留参与判断（偏保守）。

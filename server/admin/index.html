@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>PearlKin 后台</title>
+  <link rel="stylesheet" href="/admin/style.css">
+</head>
+<body>
+  <div id="login" class="login" hidden>
+    <form class="card login-card" data-form="login">
+      <h1>PearlKin 后台</h1>
+      <label>密码<input type="password" name="password" autocomplete="current-password" required autofocus></label>
+      <button class="btn primary" type="submit">登录</button>
+      <p class="err" id="login-err"></p>
+    </form>
+  </div>
+
+  <div id="shell" class="shell" hidden>
+    <nav class="side">
+      <div class="brand">PearlKin <span>后台</span></div>
+      <a href="#overview">概览</a>
+      <a href="#skin">测肤</a>
+      <a href="#users">用户</a>
+      <a href="#landing">落地页</a>
+      <a href="#usage">App 使用情况</a>
+      <a href="#ocr">拍照识别</a>
+      <div class="side-sep">待处理</div>
+      <a href="#reports">用户报错 <b id="badge-reports"></b></a>
+      <a href="#products">产品库与补录 <b id="badge-submissions"></b></a>
+      <a href="#unknowns">未识别成分 <b id="badge-unknowns"></b></a>
+      <div class="side-sep">配置</div>
+      <a href="#questions">测肤问卷</a>
+      <a href="#rules">规则包</a>
+      <a href="#settings">设置</a>
+      <button class="link logout" data-act="logout">退出登录</button>
+    </nav>
+    <main id="main"></main>
+  </div>
+  <div id="toast" class="toast" hidden></div>
+  <script src="/admin/app.js"></script>
+</body>
+</html>
