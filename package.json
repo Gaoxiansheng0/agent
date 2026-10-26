@@ -1,0 +1,24 @@
+{
+  "name": "idea-forge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "点子熔炉：把一句话点子变成带来源的商业化方案（市场调研、分国家合规、MVP、做/不做结论）",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --disable-warning=ExperimentalWarning scripts/dev.ts",
+    "server": "node --disable-warning=ExperimentalWarning --use-env-proxy --env-file-if-exists=.env server/index.ts",
+    "build": "vite build",
+    "start": "npm run build && npm run server",
+    "check": "tsc --noEmit",
+    "test": "node --disable-warning=ExperimentalWarning --test \"tests/*.test.ts\"",
+    "preview:fake": "vite build && node --disable-warning=ExperimentalWarning scripts/preview-fake.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1"
+  }
+}
