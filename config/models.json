@@ -1,0 +1,211 @@
+{
+  "checkedAt": "2026-10-26",
+  "note": "status=confirmed 表示接口地址、鉴权与模型名已在官方文档或官方 SDK 中核对；pending 表示产品存在但接口细节未核实，导出时只生成占位节点，不生成可调用请求。新增模型：照抄一条并在 shared/providers.ts 里补对应 provider。",
+  "models": [
+    {
+      "id": "ark-seedream-5-pro",
+      "kind": "image",
+      "vendor": "火山方舟",
+      "label": "Seedream 5.0 pro（豆包图像）",
+      "status": "confirmed",
+      "provider": "ark-image",
+      "model": "doubao-seedream-5-0-pro-260628",
+      "modes": ["t2i", "i2i"],
+      "docs": "https://docs.volcengine.com/docs/ark/image-generation-api",
+      "notes": "POST /api/v3/images/generations，size 用 2K，画幅写进提示词；返回 data[0].url。"
+    },
+    {
+      "id": "ark-seedream-4",
+      "kind": "image",
+      "vendor": "火山方舟",
+      "label": "Seedream 4.0 / 4.5",
+      "status": "pending",
+      "docs": "https://docs.volcengine.com/docs/ark/image-generation-api",
+      "notes": "官方文档列出该系列，但带日期后缀的模型 ID 未核对，待确认。"
+    },
+    {
+      "id": "kling-image",
+      "kind": "image",
+      "vendor": "可灵",
+      "label": "可灵图片生成",
+      "status": "pending",
+      "docs": "https://klingai.com/document-api",
+      "notes": "文档目录有「图片」分类，具体路径与参数未核对，待确认。"
+    },
+    {
+      "id": "kling-3-i2v",
+      "kind": "video",
+      "vendor": "可灵",
+      "label": "可灵 3.0 图生视频",
+      "status": "confirmed",
+      "provider": "kling-i2v",
+      "model": "kling-3.0",
+      "modes": ["i2v"],
+      "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      "docs": "https://klingai.com/document-api/api/video/3-0-omni/image-to-video",
+      "notes": "POST https://api-beijing.klingai.com/image-to-video/kling-3.0，Bearer API Key；异步，GET /tasks?task_ids= 查询。"
+    },
+    {
+      "id": "kling-4",
+      "kind": "video",
+      "vendor": "可灵",
+      "label": "可灵 4.0",
+      "status": "pending",
+      "docs": "https://klingai.com/document-api",
+      "notes": "官网标注 PREVIEW，接口参数未核对，待确认。"
+    },
+    {
+      "id": "ark-seedance-2-5",
+      "kind": "video",
+      "vendor": "火山方舟",
+      "label": "Seedance 2.5（豆包视频）",
+      "status": "confirmed",
+      "provider": "ark-video",
+      "model": "doubao-seedance-2-5-260628",
+      "modes": ["i2v", "t2v"],
+      "durations": [4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "durationsConfirmed": false,
+      "docs": "https://docs.volcengine.com/docs/ark/create-video-generation-task-api",
+      "notes": "POST /api/v3/contents/generations/tasks，content 数组放 text 与 image_url；异步，GET .../tasks/{id} 查询。可选时长列表未逐项核对，待确认。"
+    },
+    {
+      "id": "minimax-hailuo-2-3",
+      "kind": "video",
+      "vendor": "MiniMax 海螺",
+      "label": "海螺 MiniMax-Hailuo-2.3 图生视频",
+      "status": "confirmed",
+      "provider": "minimax-i2v",
+      "model": "MiniMax-Hailuo-2.3",
+      "modes": ["i2v"],
+      "durations": [6, 10],
+      "docs": "https://platform.minimax.cn/docs/api-reference/video-generation-i2v",
+      "notes": "POST https://api.minimax.cn/v1/video_generation，first_frame_image 必填；768P 支持 6/10 秒，1080P 仅 6 秒。"
+    },
+    {
+      "id": "minimax-hailuo-02",
+      "kind": "video",
+      "vendor": "MiniMax 海螺",
+      "label": "海螺 MiniMax-Hailuo-02 图生视频",
+      "status": "confirmed",
+      "provider": "minimax-i2v",
+      "model": "MiniMax-Hailuo-02",
+      "modes": ["i2v"],
+      "durations": [6, 10],
+      "docs": "https://platform.minimax.cn/docs/api-reference/video-generation-i2v",
+      "notes": "同上接口；512P/768P 支持 10 秒。"
+    },
+    {
+      "id": "runway-gen4-turbo",
+      "kind": "video",
+      "vendor": "Runway",
+      "label": "Runway gen4_turbo 图生视频",
+      "status": "confirmed",
+      "provider": "runway-i2v",
+      "model": "gen4_turbo",
+      "modes": ["i2v"],
+      "durations": [5, 10],
+      "durationsConfirmed": false,
+      "docs": "https://docs.dev.runwayml.com/api/",
+      "notes": "POST https://api.dev.runwayml.com/v1/image_to_video，X-Runway-Version: 2024-11-06（官方 Node SDK 默认值）；ratio 用 720:1280 / 1280:720。时长取值待确认。"
+    },
+    {
+      "id": "vidu-q1",
+      "kind": "video",
+      "vendor": "Vidu",
+      "label": "Vidu viduq1 图生视频",
+      "status": "confirmed",
+      "provider": "vidu-i2v",
+      "model": "viduq1",
+      "modes": ["i2v"],
+      "durations": [5],
+      "durationsConfirmed": false,
+      "docs": "https://docs.platform.vidu.cn/",
+      "notes": "POST https://api.vidu.cn/ent/v2/img2video，Authorization: Token {key}；返回 task_id。时长取值待确认。"
+    },
+    {
+      "id": "jimeng",
+      "kind": "video",
+      "vendor": "即梦",
+      "label": "即梦（独立开放接口）",
+      "status": "pending",
+      "docs": "",
+      "notes": "即梦产品的独立 API 与签名方式未核对，待确认；同为字节系的 Seedance 已可经火山方舟调用。"
+    },
+    {
+      "id": "minimax-speech-2-8-hd",
+      "kind": "tts",
+      "vendor": "MiniMax",
+      "label": "MiniMax speech-2.8-hd 语音合成",
+      "status": "confirmed",
+      "provider": "minimax-tts",
+      "model": "speech-2.8-hd",
+      "modes": ["tts"],
+      "docs": "https://platform.minimax.cn/docs/api-reference/speech-t2a-http",
+      "notes": "POST https://api.minimax.cn/v1/t2a_v2，voice_setting.voice_id 需在节点里按说话人填写；output_format=url 时链接 24 小时有效。"
+    },
+    {
+      "id": "minimax-speech-2-8-turbo",
+      "kind": "tts",
+      "vendor": "MiniMax",
+      "label": "MiniMax speech-2.8-turbo 语音合成",
+      "status": "confirmed",
+      "provider": "minimax-tts",
+      "model": "speech-2.8-turbo",
+      "modes": ["tts"],
+      "docs": "https://platform.minimax.cn/docs/api-reference/speech-t2a-http",
+      "notes": "同上，速度优先。"
+    },
+    {
+      "id": "volc-tts",
+      "kind": "tts",
+      "vendor": "火山引擎",
+      "label": "豆包语音合成",
+      "status": "pending",
+      "docs": "",
+      "notes": "接口与鉴权未核对，待确认。"
+    },
+    {
+      "id": "manual-bgm",
+      "kind": "music",
+      "vendor": "人工",
+      "label": "人工选曲（填入音乐链接）",
+      "status": "confirmed",
+      "provider": "manual",
+      "modes": ["music"],
+      "docs": "",
+      "notes": "工作流只输出配乐说明，运行时在开始节点填 bgm_url。不调用任何接口。"
+    },
+    {
+      "id": "minimax-music",
+      "kind": "music",
+      "vendor": "MiniMax",
+      "label": "MiniMax 音乐生成",
+      "status": "pending",
+      "docs": "",
+      "notes": "接口与模型名未核对，待确认。"
+    },
+    {
+      "id": "runway-sound-effect",
+      "kind": "music",
+      "vendor": "Runway",
+      "label": "Runway 音效生成",
+      "status": "pending",
+      "docs": "https://docs.dev.runwayml.com/api/",
+      "notes": "文档目录有 POST /v1/sound_effect，请求字段未核对，待确认。"
+    }
+  ],
+  "platformPlugins": [
+    {
+      "platform": "dify",
+      "name": "Dify 市场里的可灵 / 即梦 / 海螺类插件",
+      "status": "pending",
+      "notes": "插件名称、作者与参数随版本变化，未核对，待确认。生成的 DSL 只用内置 HTTP 请求节点，不依赖插件。"
+    },
+    {
+      "platform": "coze",
+      "name": "扣子插件市场的视频 / 图像 / 语音插件",
+      "status": "pending",
+      "notes": "未核对，待确认。生成的配置只用内置 HTTP、代码节点。"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "name": "flow-forge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "把映言分镜脚本自动编排成 Dify / 扣子可导入的工作流",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k \"tsx watch server/index.ts\" \"vite --host 127.0.0.1\"",
+    "start": "tsx server/index.ts",
+    "build": "tsc --noEmit && vite build",
+    "check": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "export:sample": "tsx scripts/export-sample.ts",
+    "validate:graphon": "tsx scripts/export-sample.ts && python scripts/validate_dify_graphon.py out/sample.dify.yml"
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.12.0",
+    "dotenv": "^17.4.2",
+    "exceljs": "^4.4.0",
+    "express": "^5.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tsx": "^4.23.15",
+    "yaml": "^2.9.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.2.5",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.5"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}
