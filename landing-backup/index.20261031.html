@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PearlKin · AI skin analysis for you and your family</title>
+<meta name="description" content="One selfie, a 10-point AI skin report: pores, oil, acne, dark circles, spots, fine lines and more. Then see which of your products suit your skin, for you and everyone at home.">
+<link rel="canonical" href="https://pearlkin.pearlwren.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PearlKin">
+<meta property="og:title" content="PearlKin · AI skin analysis for you and your family">
+<meta property="og:description" content="One selfie, a 10-point AI skin report: pores, oil, acne, dark circles, spots, fine lines and more.">
+<meta property="og:url" content="https://pearlkin.pearlwren.com/">
+<meta name="twitter:card" content="summary">
+<style>
+  :root {
+    --bg: #F6F4F0; --surface: #FFFFFF; --ink: #121212; --sub: #6E6C68; --faint: #A19E98; --line: #E9E5DE; --fill: #EFEBE5;
+    --good: #2E9B6B; --care: #D2911B; --bad: #E0623F; --doctor: #4A74D6;
+    --pearl: linear-gradient(135deg, #D8CCFF 0%, #C3E6F2 50%, #F7E3D2 100%);
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
+  .mark { font-weight: 700; font-size: 19px; letter-spacing: -0.3px; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+  .mark i { width: 22px; height: 22px; border-radius: 50%; background: var(--pearl); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+  nav a { text-decoration: none; font-weight: 600; font-size: 15px; margin-left: 22px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--ink); color: #fff; text-decoration: none;
+    padding: 16px 26px; border-radius: 999px; border: 0; font: 600 16px var(--sans); cursor: pointer; transition: transform .15s, opacity .15s; }
+  .btn:hover { transform: translateY(-1px); opacity: .92; }
+  .btn.light { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+  .btn:focus-visible { outline: 3px solid #9C86F2; outline-offset: 3px; }
+  .kicker { display: inline-flex; gap: 6px; align-items: center; background: var(--pearl); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--ink); }
+  h1, h2 { letter-spacing: -0.04em; line-height: 1.04; margin: 0; }
+  h1 { font-size: clamp(42px, 6.4vw, 76px); font-weight: 700; }
+  h2 { font-size: clamp(32px, 4.4vw, 52px); font-weight: 700; }
+  h3 { font-size: 19px; margin: 0 0 6px; letter-spacing: -0.2px; }
+  .lede { font-size: 20px; color: var(--sub); max-width: 32em; margin: 22px 0 30px; }
+  .muted { color: var(--sub); }
+  .small { font-size: 14px; color: var(--sub); }
+
+  .hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; padding: 40px 0 96px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .trust { margin-top: 22px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--sub); }
+
+  /* Phone-style report preview */
+  .device { position: relative; justify-self: center; width: min(360px, 100%); border-radius: 44px; background: var(--surface); padding: 14px; box-shadow: 0 40px 80px -40px rgba(30,24,60,.45), 0 0 0 1px var(--line); }
+  .screen { border-radius: 32px; background: var(--bg); padding: 20px; overflow: hidden; }
+  .face { position: relative; height: 210px; border-radius: 24px; background: var(--pearl); overflow: hidden; display: grid; place-items: center; }
+  .oval { width: 120px; height: 158px; border-radius: 50%; border: 2px solid rgba(18,18,18,.35); }
+  .scan { position: absolute; left: 0; right: 0; height: 60px; background: linear-gradient(180deg, transparent, rgba(255,255,255,.9)); animation: scan 2.6s ease-in-out infinite; }
+  @keyframes scan { 0% { top: -60px } 50% { top: 210px } 100% { top: -60px } }
+  @media (prefers-reduced-motion: reduce) { .scan { animation: none; top: 40%; } }
+  .tag { position: absolute; background: rgba(255,255,255,.88); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+  .score { display: flex; gap: 16px; align-items: center; margin: 18px 0 8px; }
+  .ring { width: 92px; height: 92px; border-radius: 50%; background: conic-gradient(#9C86F2, #6FC2DB, #E8A27E 78%, var(--fill) 0); display: grid; place-items: center; flex: none; }
+  .ring b { width: 74px; height: 74px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font-size: 30px; letter-spacing: -1px; }
+  .meta div { font-size: 12px; color: var(--sub); text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+  .meta strong { display: block; font-size: 20px; margin-bottom: 6px; }
+  .dim { display: grid; grid-template-columns: 92px 1fr 28px; gap: 10px; align-items: center; font-size: 13px; margin: 9px 0; }
+  .bar { height: 6px; border-radius: 3px; background: var(--fill); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 3px; }
+
+  section { padding: 96px 0; }
+  .center { text-align: center; }
+  .center .lede { margin-left: auto; margin-right: auto; }
+  .dims { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 40px; }
+  .dims div { background: var(--surface); border-radius: 20px; padding: 20px 16px; text-align: left; }
+  .dims b { display: block; font-size: 15px; }
+  .dims span { font-size: 13px; color: var(--sub); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; }
+  .step { background: var(--surface); border-radius: 26px; padding: 28px; }
+  .step .n { width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 700; margin-bottom: 18px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .card { background: var(--surface); border-radius: 26px; padding: 24px; box-shadow: 0 20px 50px -36px rgba(0,0,0,.25); }
+  .product { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .product b { display: block; font-size: 17px; }
+  .inside { font-size: 13px; margin: 12px 0 4px; padding: 8px 10px; background: #fbefe6; border-radius: 10px; color: var(--bad); }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .row small { color: var(--sub); }
+  .chip { font-size: 13px; font-weight: 700; padding: 5px 11px; border-radius: 999px; white-space: nowrap; }
+  .good { color: var(--good); background: #2E9B6B1A; } .care { color: var(--care); background: #D2911B1A; }
+  .bad { color: var(--bad); background: #E0623F1A; } .doctor { color: var(--doctor); background: #4A74D61A; }
+  ul.ticks { list-style: none; padding: 0; margin: 24px 0 0; }
+  ul.ticks li { padding-left: 30px; position: relative; margin: 12px 0; }
+  ul.ticks li::before { content: "✓"; position: absolute; left: 0; font-weight: 700; }
+  .dark { background: var(--ink); color: #fff; border-radius: 40px; padding: 72px 56px; }
+  .dark .lede, .dark .small { color: #B9B6B1; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 40px; }
+  .stats b { display: block; font-size: 52px; letter-spacing: -2px; background: var(--pearl); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stats span { color: #B9B6B1; font-size: 15px; }
+  .privacy { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .price { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 760px; margin: 40px auto 0; text-align: left; }
+  .plan { background: var(--surface); border-radius: 26px; padding: 30px; position: relative; }
+  .plan.best { box-shadow: inset 0 0 0 2px var(--ink); }
+  .plan .badge { position: absolute; top: 20px; right: 20px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 4px 10px; }
+  .plan .amt { font-size: 44px; font-weight: 700; letter-spacing: -1.5px; }
+  details { border-bottom: 1px solid var(--line); padding: 18px 0; max-width: 760px; margin: 0 auto; text-align: left; }
+  summary { cursor: pointer; font-weight: 600; font-size: 18px; }
+  details p { color: var(--sub); margin: 10px 0 0; }
+  .notify { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 26px; }
+  .notify input { flex: 0 1 320px; font: 16px var(--sans); padding: 15px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+  footer { padding: 40px 0 56px; font-size: 13px; color: var(--sub); border-top: 1px solid var(--line); margin-top: 40px; }
+
+  @media (max-width: 900px) {
+    .hero, .split { grid-template-columns: 1fr; gap: 40px; }
+    .dims { grid-template-columns: repeat(2, 1fr); }
+    .steps, .stats, .privacy, .price { grid-template-columns: 1fr; }
+    .dark { padding: 48px 24px; border-radius: 28px; }
+    section { padding: 64px 0; }
+    nav a.hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="mark" href="./"><i></i>PearlKin</a>
+  <nav><a class="hide-sm" href="#how">How it works</a><a class="hide-sm" href="#pricing">Pricing</a><a href="/app/" class="open-app">Open app →</a></nav>
+</header>
+
+<main>
+  <div class="hero">
+    <div>
+      <span class="kicker">✦ AI skin analysis</span>
+      <h1 id="headline" style="margin-top:20px">Your skin, read by AI in 30 seconds.</h1>
+      <p class="lede" id="lede">One selfie gives you a 10-point skin report: pores, oil, acne, dark circles, spots, fine lines and more. Then see which of your products actually suit your skin.</p>
+      <div class="cta-row">
+        <a class="btn open-app" href="/app/">Start my AI skin test</a>
+        <a class="btn light" href="#how">How it works</a>
+      </div>
+      <div class="trust"><span>🔒 Photo analyzed, never stored</span><span>✓ 3-day free trial</span><span>♡ For the whole family</span></div>
+    </div>
+
+    <div class="device" aria-label="Sample PearlKin skin report">
+      <div class="screen">
+        <div class="face">
+          <div class="oval"></div><div class="scan"></div>
+          <span class="tag" style="top:14%;left:8%">Pores</span><span class="tag" style="top:62%;left:6%">Oil</span>
+          <span class="tag" style="top:18%;right:8%">Dark spots</span><span class="tag" style="top:66%;right:7%">Eye bags</span>
+        </div>
+        <div class="score">
+          <div class="ring"><b>78</b></div>
+          <div class="meta"><div>Skin age</div><strong>27</strong><div>Skin type</div><strong style="font-size:16px">Combination</strong></div>
+        </div>
+        <div class="dim"><span>Oil & shine</span><span class="bar"><i style="width:56%;background:var(--care)"></i></span><b>56</b></div>
+        <div class="dim"><span>Pores</span><span class="bar"><i style="width:61%;background:var(--care)"></i></span><b>61</b></div>
+        <div class="dim"><span>Dark circles</span><span class="bar"><i style="width:74%;background:#7FA33A"></i></span><b>74</b></div>
+        <div class="dim"><span>Fine lines</span><span class="bar"><i style="width:90%;background:var(--good)"></i></span><b>90</b></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="center" style="padding-top:0">
+    <h2>Ten measures. One selfie.</h2>
+    <p class="lede">PearlKin's AI reads what a mirror can't measure, and turns it into a plain-language report you can track over time.</p>
+    <div class="dims">
+      <div><b>Skin overview</b><span>Type, skin age, score</span></div>
+      <div><b>Pores</b><span>Size and visibility</span></div>
+      <div><b>Oil &amp; shine</b><span>T-zone and beyond</span></div>
+      <div><b>Acne</b><span>Active blemishes</span></div>
+      <div><b>Blackheads</b><span>Congestion</span></div>
+      <div><b>Dark spots</b><span>Uneven tone</span></div>
+      <div><b>Fine lines</b><span>Lines and wrinkles</span></div>
+      <div><b>Sensitivity</b><span>Redness, irritation</span></div>
+      <div><b>Dark circles</b><span>Under-eye shadow</span></div>
+      <div><b>Eye bags</b><span>Puffiness</span></div>
+    </div>
+  </section>
+
+  <section id="how">
+    <h2 class="center">From selfie to routine in three steps.</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Snap a selfie</h3><p class="muted">Bare face, good light, 5 seconds. Tell us how the photo was taken and answer a quick question.</p></div>
+      <div class="step"><div class="n">2</div><h3>Get your AI report</h3><p class="muted">Your score, skin age and skin type, plus all nine measures with notes on what the AI sees and where.</p></div>
+      <div class="step"><div class="n">3</div><h3>Fix your routine</h3><p class="muted">Add what's on your shelf. PearlKin flags what doesn't suit your skin right now and builds a morning and evening routine from what you own.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div>
+        <span class="kicker">✦ For everyone at home</span>
+        <h2 style="margin-top:18px">One product. A different answer for each person.</h2>
+        <p class="lede">The serum that's great for you may be wrong for your 11-year-old, or for you during pregnancy. Add your family, and PearlKin checks every product against each person's age, life stage and skin.</p>
+        <ul class="ticks">
+          <li>Up to 6 people, each with their own skin report</li>
+          <li>Pregnancy, breastfeeding, teens and sensitive skin covered</li>
+          <li>Every flag explains the ingredient and cites its source</li>
+        </ul>
+      </div>
+      <div class="card" aria-label="Sample product check">
+        <div class="product"><div><b>Hydrating Glow Serum</b><small class="muted">On the front: "hydrating · gentle · glow"</small></div><small class="muted">Sample</small></div>
+        <p class="inside">Actually inside: <b>retinol</b> · <b>glycolic acid</b> · <b>fragrance</b></p>
+        <div class="row"><div>Maya <small>· age 11</small></div><span class="chip bad">✕ Not for now</span></div>
+        <div class="row"><div>Leo <small>· age 15</small></div><span class="chip care">! Use with care</span></div>
+        <div class="row"><div>Mom <small>· pregnant</small></div><span class="chip doctor">? Ask your doctor</span></div>
+        <div class="row"><div>Dad <small>· adult</small></div><span class="chip good">✓ Good fit</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="dark">
+      <span class="kicker">For parents</span>
+      <h2 style="margin-top:18px;max-width:16em">What hides in your kid's "gentle" skincare.</h2>
+      <p class="lede">Many products made for adult skin never say "anti-aging" on the front. A "glow" toner can carry exfoliating acid; a "renewing" serum, retinol. PearlKin finds them in seconds.</p>
+      <div class="stats">
+        <div><b>11</b><span>potentially irritating actives, on average, in the most-viewed teen skincare routines on TikTok</span></div>
+        <div><b>&gt;½</b><span>of the products in those routines contained fragrance</span></div>
+        <div><b>26%</b><span>of daytime routines included sunscreen</span></div>
+      </div>
+      <p class="small" style="margin-top:24px">Source: <a href="https://news.northwestern.edu/stories/2025/06/tiktok-teen-skin-care-routines-are-harmful">Northwestern Medicine study in <i>Pediatrics</i>, June 2025</a>. PearlKin doesn't analyze the faces of children under 13; it checks their products.</p>
+    </div>
+  </section>
+
+  <section class="center">
+    <h2>Private by design.</h2>
+    <div class="privacy" style="text-align:left">
+      <div class="step"><h3>🔒 Photos are never stored</h3><p class="muted">Your selfie is analyzed, then deleted. We keep the scores, not the face.</p></div>
+      <div class="step"><h3>✕ No ads, no brand deals</h3><p class="muted">We don't sell data, and brands can't pay to change a result.</p></div>
+      <div class="step"><h3>⌫ Delete anytime</h3><p class="muted">Delete your account and everything in it from the app, in one tap.</p></div>
+    </div>
+  </section>
+
+  <section class="center" id="pricing">
+    <h2>Try it free for 3 days.</h2>
+    <p class="lede">Full reports, unlimited skin tests, the whole family and your AI routine.</p>
+    <div class="price">
+      <div class="plan best"><span class="badge">Save 75%</span><h3>Yearly</h3><div class="amt">$29.99</div><p class="muted">per year after a 3-day free trial. About $2.50 a month.</p></div>
+      <div class="plan"><h3>Monthly</h3><div class="amt">$9.99</div><p class="muted">per month after a 3-day free trial.</p></div>
+    </div>
+    <p class="small" style="max-width:640px;margin:22px auto 0">Starting the free trial needs a payment method on your Apple or Google account. The subscription starts automatically when the trial ends unless you cancel at least 24 hours before. Cancel anytime in your phone's subscription settings: on iPhone, Settings › your name › Subscriptions; on Android, Google Play › Subscriptions.</p>
+    <div class="cta-row" style="justify-content:center;margin-top:32px"><a class="btn open-app" href="/app/">Start my 3-day free trial</a></div>
+    <p class="small" style="margin-top:28px">iPhone app coming soon. Get one email when it's in the App Store:</p>
+    <form class="notify" id="notify"><input type="email" name="email" required placeholder="you@example.com" aria-label="Email address"><button class="btn" type="submit">Notify me</button></form>
+    <p class="small" id="notify-msg" role="status"></p>
+  </section>
+
+  <section class="center" style="padding-top:0">
+    <h2 style="margin-bottom:24px">Questions</h2>
+    <details><summary>How accurate is the AI skin analysis?</summary><p>It's a cosmetic estimate from one photo, like a trained eye looking closely. Bare skin, even light and the same spot each time give the most consistent results. It's not a medical exam.</p></details>
+    <details><summary>Is this medical advice?</summary><p>No. PearlKin gives cosmetic and ingredient information. For skin conditions, pregnancy or medications, talk to your doctor.</p></details>
+    <details><summary>What happens to my photo?</summary><p>It's sent securely to our AI for analysis and then discarded. We never store your face. Your scores, family profiles and shelf are saved to your account.</p></details>
+    <details><summary>Can I use it for my kids?</summary><p>Yes, as profiles under your account. Teens 13 and up can take skin tests. For younger children we check the products they use but don't analyze their faces.</p></details>
+    <details><summary>How is this different from Yuka or other scanner apps?</summary><p>Those apps give a product one score for everyone. PearlKin reads your skin first, then tells you whether each product suits you, your teen, or you during pregnancy.</p></details>
+  </section>
+</main>
+
+<footer>Informational only. Not medical advice. · © 2026 PearlWren · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a id="contact" href="mailto:hello@pearlwren.com">hello@pearlwren.com</a></footer>
+</div>
+
+<script>
+  // Ads link to ?h=a|b|c to compare headlines. The kids headline (b) is a traffic hook; the product is for everyone.
+  // Visits and clicks are counted anonymously (random id in this browser, no cookies).
+  const HOOKS = {
+    a: ['Your skin, read by AI in 30 seconds.',
+        'One selfie gives you a 10-point skin report: pores, oil, acne, dark circles, spots, fine lines and more. Then see which of your products actually suit your skin.'],
+    b: ["I scanned my 11-year-old's Sephora haul.",
+        'The "hydrating" serum had retinol. PearlKin checks every product for every person at home, and reads your own skin with AI while you\'re at it.'],
+    c: ["One app for your skin, and everyone's at home.",
+        'An AI skin report for you, and a clear answer on every product for each person in your family: teens, pregnancy, sensitive skin.'],
+  }
+  const params = new URLSearchParams(location.search)
+  const hook = HOOKS[params.get('h')] ? params.get('h') : 'a'
+  ;[document.getElementById('headline').textContent, document.getElementById('lede').textContent] = HOOKS[hook]
+
+  const visitor = (() => {
+    const make = () => 'w-' + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10)
+    try { return localStorage.getItem('fs-visitor') || (localStorage.setItem('fs-visitor', make()), localStorage.getItem('fs-visitor')) } catch { return make() }
+  })()
+  function track(name, props) {
+    const body = JSON.stringify({ source: 'web', install_id: visitor, platform: 'web', events: [{ name, props: { hook, ...props } }] })
+    if (!(navigator.sendBeacon && navigator.sendBeacon('/api/events', new Blob([body], { type: 'application/json' }))))
+      fetch('/api/events', { method: 'POST', headers: { 'content-type': 'application/json' }, body, keepalive: true }).catch(() => {})
+  }
+  const ref = (() => { try { const h = new URL(document.referrer).hostname; return h === location.hostname ? '' : h } catch { return '' } })()
+  track('page_view', { utm_source: params.get('utm_source') || '', utm_campaign: params.get('utm_campaign') || '', ref })
+  document.querySelectorAll('.open-app').forEach(a => a.addEventListener('click', () => track('cta_click', { kind: 'open_app' })))
+
+  fetch('/api/config').then(r => r.json()).then(cfg => {
+    if (cfg.contactEmail) { const a = document.getElementById('contact'); a.href = 'mailto:' + cfg.contactEmail; a.textContent = cfg.contactEmail }
+    if (cfg.appStoreUrl) document.querySelectorAll('.open-app').forEach(a => { a.href = cfg.appStoreUrl })
+  }).catch(() => {})
+
+  document.getElementById('notify').addEventListener('submit', async e => {
+    e.preventDefault()
+    const msg = document.getElementById('notify-msg')
+    try {
+      const r = await fetch('/api/waitlist', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: e.target.email.value.trim(), hook }) })
+      const j = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(j.error || 'Something went wrong. Try again.')
+      track('waitlist_join')
+      e.target.hidden = true
+      msg.textContent = "You're on the list. One email when the iPhone app launches."
+    } catch (err) { msg.textContent = err.message }
+  })
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · PearlKin</title>
+<meta name="robots" content="noindex">
+__HEAD_COMMON__
+<style>
+__CSS_COMMON__
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+  .bar .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  main { flex: 1; display: grid; place-items: center; padding: 48px 0 96px; text-align: center; }
+  .stage { --s: 0.62; position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 16px; width: min(520px, 100%); margin: 0 auto; padding: 48px 32px 0; border-radius: 24px; background: var(--mist); overflow: hidden; }
+  .stage::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 32px; background: var(--mist-2); box-shadow: 0 -1px 0 #F8F7FB; }
+  .stage > * { position: relative; margin-bottom: 24px; }
+  .gap { width: 76px; height: 150px; border-radius: 16px; border: 2px dashed #B9B1C6; display: grid; place-items: center; font: 600 32px/1 var(--head); color: var(--sub); }
+  h1 { margin-top: 48px; }
+  main p { margin: 16px auto 0; max-width: 480px; }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 32px; }
+  @media (max-width: 720px) { .stage { --s: 0.46; gap: 8px; padding: 32px 16px 0; } .gap { width: 56px; height: 110px; } }
+</style>
+</head>
+<body>
+__ICONS__
+<a class="skip t-btn" href="#main">Skip to content</a>
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="/" aria-label="PearlKin home"><span class="pearl"></span>PearlKin</a>
+    <a class="btn sm t-btn" href="/app/">Open the app</a>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+    <div class="stage" aria-hidden="true">{{bottle:cleanser}}{{bottle:serum}}<span class="gap">?</span>{{bottle:spf}}</div>
+    <h1 class="t-h2">This page isn't on the shelf.</h1>
+    <p class="t-lede">The link may be out of date, or the page has moved. Everything else is right where you left it.</p>
+    <div class="actions">
+      <a class="btn t-btn" href="/">Back to the home page</a>
+      <a class="btn quiet t-btn" href="/app/">Open the app</a>
+    </div>
+  </div>
+</main>
+
+__FOOTER__
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+__CSS_COMMON__
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body { display: grid; grid-template-columns: 520px 1fr; gap: 48px; align-items: center; padding: 64px 64px 64px 72px; }
+  .mark { font-size: 26px; }
+  .mark .pearl { width: 26px; height: 26px; }
+  h1 { margin-top: 40px; font: 600 60px/66px var(--head); letter-spacing: -0.035em; }
+  p { margin-top: 24px; font-size: 24px; line-height: 34px; color: var(--sub); }
+  .stage { position: relative; height: 502px; border-radius: 28px; background: var(--mist); overflow: hidden; padding: 32px; }
+  .light { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .shelf { --s: 0.78; position: absolute; left: 0; right: 0; top: 40px; display: flex; justify-content: center; align-items: flex-end; gap: 14px; height: 250px; }
+  .ledge { position: absolute; left: 0; right: 0; top: 282px; height: 220px; background: var(--mist-2); box-shadow: 0 -1px 0 #F8F7FB; }
+  .shelf .bottle:nth-child(3) { transform: translateY(-12px); }
+  .advice { position: absolute; left: 32px; right: 32px; bottom: 32px; padding: 24px; border-radius: 20px; background: #fff; box-shadow: 0 16px 40px rgba(48, 41, 55, 0.12); }
+  .a-row { display: flex; justify-content: space-between; align-items: center; }
+  .advice p { margin-top: 8px; font-size: 19px; line-height: 28px; color: var(--ink); }
+</style>
+</head>
+<body>
+__ICONS__
+<div>
+  <span class="mark"><span class="pearl"></span>PearlKin</span>
+  <h1>Understand your skin. Make sense of your shelf.</h1>
+  <p>Start from a selfie and what you tell us. Check the products you already own, for you and everyone at home.</p>
+</div>
+<div class="stage">
+  <svg class="light" viewBox="0 0 600 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="24"/></filter></defs>
+    <g filter="url(#soft)"><circle cx="560" cy="10" r="120" fill="#F1D5C5" opacity=".55"/><path d="M300 -60H390L210 380H120Z" fill="#fff" opacity=".6"/><path d="M430 -60H480L300 380H250Z" fill="#fff" opacity=".45"/></g>
+  </svg>
+  <div class="ledge"></div>
+  <div class="shelf">{{bottle:cleanser}}{{bottle:serum}}{{bottle:cream}}{{bottle:spf}}</div>
+  <div class="advice">
+    <div class="a-row"><span class="t-title">Mia's night cream</span><span class="verdict care"><svg class="ic sm"><use href="#i-warning"/></svg>Use with care</span></div>
+    <p>It contains fragrance, and Mia's skin is sensitive.</p>
+  </div>
+</div>
+</body>
+</html>

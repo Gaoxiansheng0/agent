@@ -32,7 +32,7 @@ echo "== test"
 echo "== build"
 (cd "$ROOT/mobile" && EXPO_PUBLIC_API_URL="https://$DOMAIN" EXPO_PUBLIC_SITE_URL="https://$DOMAIN" EXPO_PUBLIC_APP_TOKEN="$APP_TOKEN" \
   npx expo export --platform web --output-dir "$BUILD/site/app" --clear >/dev/null)
-cp "$ROOT"/landing/*.html "$ROOT"/landing/*.css "$BUILD/site/"
+cp "$ROOT"/landing/*.html "$ROOT"/landing/*.css "$ROOT"/landing/*.png "$ROOT"/landing/robots.txt "$ROOT"/landing/sitemap.xml "$BUILD/site/"
 mkdir -p "$BUILD/srv/server/admin" "$BUILD/srv/engine"
 (cd "$ROOT/server" && cp *.ts package.json package-lock.json tsconfig.json "$BUILD/srv/server/" && rm -f "$BUILD"/srv/server/*.test.ts && cp admin/* "$BUILD/srv/server/admin/")
 cp "$ROOT/engine/engine.ts" "$ROOT/engine/rule-pack.json" "$BUILD/srv/engine/"
@@ -116,6 +116,15 @@ $DOMAIN {
 		root * /var/www/pearlkin
 		try_files {path} {path}.html
 		file_server
+	}
+	# Missing pages get the landing 404 page (still with a 404 status). API errors pass through untouched.
+	handle_errors {
+		@notfound expression {err.status_code} == 404
+		handle @notfound {
+			root * /var/www/pearlkin
+			rewrite * /404.html
+			file_server
+		}
 	}
 }
 CADDY

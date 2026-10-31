@@ -1,0 +1,81 @@
+  /* Fonts are inlined so the page makes no third party requests (the privacy policy promises none). */
+  @font-face { font-family: 'Manrope'; font-style: normal; font-weight: 400 800; font-display: swap; src: url(data:font/woff2;base64,__MANROPE__) format('woff2'); }
+  @font-face { font-family: 'Source Sans 3'; font-style: normal; font-weight: 200 900; font-display: swap; src: url(data:font/woff2;base64,__SOURCE_SANS__) format('woff2'); }
+
+  :root {
+    --bg: #FAFAF7; --mist: #EFEDF6; --mist-2: #E5E1EF; --ink: #302937; --sub: #6B6471; --line: #E3DFE8; --card: #FFFFFF;
+    --apricot: #F1D5C5; --apricot-soft: #F8EAE1;
+    /* Verdict colors live apart from brand colors, and always come with an icon and words. */
+    --good: #3E6C5A; --good-bg: #E3EEE8; --care: #85570F; --care-bg: #FAEFD9; --no: #A13A3A; --no-bg: #F7E3E1; --doc: #3F4F9E; --doc-bg: #E6E9F6;
+    --head: 'Manrope', system-ui, sans-serif; --text: 'Source Sans 3', system-ui, sans-serif;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1); --fast: 200ms;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--text); font-size: 18px; line-height: 28px; -webkit-font-smoothing: antialiased; }
+  img, svg { display: block; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 8px; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+  /* Text styles */
+  .t-h1 { font: 600 60px/64px var(--head); letter-spacing: -0.035em; }
+  .t-h2 { font: 600 44px/52px var(--head); letter-spacing: -0.03em; }
+  .t-h3 { font: 600 24px/32px var(--head); letter-spacing: -0.02em; }
+  .t-title { font: 600 18px/24px var(--head); letter-spacing: -0.01em; }
+  .t-lede { font-size: 20px; line-height: 30px; color: var(--sub); }
+  .t-body { font-size: 18px; line-height: 28px; }
+  .t-small { font-size: 15px; line-height: 22px; }
+  .t-eyebrow { font: 600 14px/20px var(--head); color: var(--sub); letter-spacing: 0; }
+  .t-btn { font: 600 16px/24px var(--head); letter-spacing: -0.01em; }
+  .sub { color: var(--sub); }
+  .num { font-family: var(--head); font-variant-numeric: tabular-nums; }
+
+  .ic { width: 20px; height: 20px; fill: currentColor; flex: none; }
+  .ic.sm { width: 16px; height: 16px; }
+
+  /* Buttons: one solid action, one quiet one. */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 24px; border-radius: 12px; background: var(--ink); color: #FAFAF7; text-decoration: none; transition: background-color var(--fast) var(--ease), transform var(--fast) var(--ease); }
+  .btn:hover { background: #463C50; }
+  .btn:active { transform: scale(0.98); }
+  .btn.quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .btn.quiet:hover { background: rgba(48, 41, 55, 0.06); }
+  .btn.sm { min-height: 44px; padding: 8px 16px; }
+  .link { display: inline-flex; align-items: center; gap: 4px; font: 600 16px/24px var(--head); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+
+  /* Pearl mark: the brand's one ornament. */
+  .mark { display: inline-flex; align-items: center; gap: 8px; font: 700 20px/24px var(--head); letter-spacing: -0.02em; text-decoration: none; }
+  .pearl { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #FFFFFF 0 18%, #EEEAF4 46%, #CDC4DE 100%); box-shadow: inset 0 0 0 1px rgba(48, 41, 55, 0.12); flex: none; }
+
+  /* Verdict chips */
+  .verdict { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 8px; border-radius: 8px; font: 600 15px/24px var(--head); }
+  .verdict.good { color: var(--good); background: var(--good-bg); }
+  .verdict.care { color: var(--care); background: var(--care-bg); }
+  .verdict.no { color: var(--no); background: var(--no-bg); }
+  .verdict.doc { color: var(--doc); background: var(--doc-bg); }
+  .tag { display: inline-flex; align-items: center; padding: 0 8px; border-radius: 8px; background: var(--mist); font: 600 13px/24px var(--head); color: var(--sub); }
+
+  .bottle { height: calc(var(--h) * var(--s, 1) * 1px); width: auto; }
+
+  .skip { position: absolute; left: 16px; top: -64px; z-index: 100; background: var(--ink); color: #FAFAF7; padding: 8px 16px; border-radius: 12px; text-decoration: none; }
+  .skip:focus { top: 16px; }
+
+  footer { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; padding: 48px 0 64px; border-top: 1px solid var(--line); color: var(--sub); font-size: 15px; line-height: 22px; }
+  footer nav { display: flex; gap: 24px; flex-wrap: wrap; }
+  footer nav a { text-decoration: none; }
+  footer nav a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+
+  @media (max-width: 720px) {
+    body { font-size: 17px; line-height: 26px; }
+    .wrap { padding: 0 16px; }
+    .t-h1 { font-size: 36px; line-height: 40px; }
+    .t-h2 { font-size: 32px; line-height: 40px; }
+    .t-h3 { font-size: 20px; line-height: 28px; }
+    .t-lede { font-size: 18px; line-height: 28px; }
+    .t-body { font-size: 17px; line-height: 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
