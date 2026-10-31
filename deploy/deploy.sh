@@ -32,7 +32,15 @@ echo "== test"
 echo "== build"
 (cd "$ROOT/mobile" && EXPO_PUBLIC_API_URL="https://$DOMAIN" EXPO_PUBLIC_SITE_URL="https://$DOMAIN" EXPO_PUBLIC_APP_TOKEN="$APP_TOKEN" \
   npx expo export --platform web --output-dir "$BUILD/site/app" --clear >/dev/null)
-cp "$ROOT"/landing/*.html "$ROOT"/landing/*.css "$ROOT"/landing/*.png "$ROOT"/landing/robots.txt "$ROOT"/landing/sitemap.xml "$BUILD/site/"
+cp "$ROOT"/landing/*.html "$ROOT"/landing/*.css "$ROOT"/landing/*.png "$ROOT"/landing/*.svg "$ROOT"/landing/*.ico "$ROOT"/landing/robots.txt "$ROOT"/landing/sitemap.xml "$BUILD/site/"
+# Sitemap dates: the last commit that touched each page, or today when the page has uncommitted changes.
+(cd "$ROOT" && node -e '
+const fs = require("fs"), { execFileSync } = require("child_process"), file = process.argv[1]
+const git = (...a) => execFileSync("git", a, { encoding: "utf8" }).trim()
+const day = loc => { const f = "landing/" + (new URL(loc).pathname.slice(1) || "index") + ".html"
+  return git("status", "--porcelain", "--", f) || !git("log", "-1", "--format=%cs", "--", f) ? new Date().toLocaleDateString("sv") : git("log", "-1", "--format=%cs", "--", f) }
+fs.writeFileSync(file, fs.readFileSync(file, "utf8").replace(/<loc>([^<]+)<\/loc>(?!<lastmod>)/g, (m, loc) => `${m}<lastmod>${day(loc)}</lastmod>`))
+' "$BUILD/site/sitemap.xml")
 mkdir -p "$BUILD/srv/server/admin" "$BUILD/srv/engine"
 (cd "$ROOT/server" && cp *.ts package.json package-lock.json tsconfig.json "$BUILD/srv/server/" && rm -f "$BUILD"/srv/server/*.test.ts && cp admin/* "$BUILD/srv/server/admin/")
 cp "$ROOT/engine/engine.ts" "$ROOT/engine/rule-pack.json" "$BUILD/srv/engine/"
@@ -101,19 +109,38 @@ NEW=$(mktemp)
 cat > "$NEW" <<CADDY
 $DOMAIN {
 	encode zstd gzip
+	# HSTS starts at 7 days; raise it once HTTPS has stayed healthy for a while.
+	header {
+		Strict-Transport-Security "max-age=604800"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
 	@server path /api/* /admin /admin/*
 	handle @server {
 		reverse_proxy 127.0.0.1:$PORT {
 			header_up X-Real-IP {remote_host}
 		}
 	}
-	handle /app* {
+	# Not /app*: that would also catch /apple-touch-icon.png.
+	@app path /app /app/*
+	handle @app {
 		root * /var/www/pearlkin
 		try_files {path} /app/index.html
 		file_server
 	}
 	handle {
 		root * /var/www/pearlkin
+		# One URL per page: /privacy.html -> /privacy, /index.html -> /.
+		redir /index.html / 301
+		@html {
+			path_regexp html ^/([a-z0-9-]+)\.html$
+			not path /404.html
+		}
+		redir @html /{re.html.1} 301
+		# File names aren't hashed, so static files get a week; HTML always revalidates (Caddy sends an Etag).
+		@static path *.png *.svg *.ico *.css
+		header @static Cache-Control "public, max-age=604800"
+		header ?Cache-Control "no-cache"
 		try_files {path} {path}.html
 		file_server
 	}

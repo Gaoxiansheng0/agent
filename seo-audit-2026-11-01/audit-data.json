@@ -1,0 +1,74 @@
+{
+  "summary": {
+    "health_score": 64,
+    "business_type": "Consumer AI app / SaaS (US-first, health-adjacent YMYL)",
+    "top_findings": [
+      "Google Search Console not connected; brand not found in search",
+      "Only 3 indexable pages; no content targeting real queries",
+      "No author/medical reviewer, About page or working contact inbox (YMYL trust)",
+      "Structured data limited to FAQPage (no rich result eligibility)",
+      "/privacy and /privacy.html both 200 without canonical"
+    ],
+    "quick_wins": [
+      "Canonical + meta description on privacy/terms; 301 /privacy.html",
+      "Organization + WebSite + WebApplication JSON-LD",
+      "Real favicon.ico / favicon.svg / apple-touch-icon",
+      "Caddy brotli, cache headers, HSTS, nosniff, Referrer-Policy",
+      "Sitemap lastmod; meta description to ~150 chars"
+    ]
+  },
+  "categories": [
+    {"name": "Technical SEO", "score": 70,
+     "what_works": ["HTTP to HTTPS 308", "robots.txt with sitemap", "Home canonical", "Real 404 with noindex", "gzip"],
+     "findings": [
+       {"title": "Search Console not connected", "severity": "High", "description": "No DNS TXT verification; brand returns no search results on 2026-11-01.", "recommendation": "Verify domain, submit sitemap, request indexing of home."},
+       {"title": "No security headers", "severity": "Medium", "description": "Responses lack HSTS, X-Content-Type-Options, Referrer-Policy.", "recommendation": "Add headers in Caddy."},
+       {"title": "No real favicon file", "severity": "Medium", "description": "/favicon.ico returns 404; only a data: SVG icon.", "recommendation": "Serve favicon.ico, favicon.svg, apple-touch-icon."},
+       {"title": "Duplicate privacy URL", "severity": "Medium", "description": "/privacy and /privacy.html both 200, no canonical.", "recommendation": "301 to /privacy and add canonical."},
+       {"title": "No cache headers / no brotli", "severity": "Low", "description": "No Cache-Control on HTML or og.png; br not served.", "recommendation": "Long cache for static assets; enable brotli/zstd."},
+       {"title": "Sitemap without lastmod", "severity": "Low", "description": "3 URLs, no dates.", "recommendation": "Write lastmod on deploy."}
+     ]},
+    {"name": "Content Quality", "score": 60,
+     "what_works": ["~2,450 words on home", "Citations to AAD, ACOG, Northwestern", "Honest limits section"],
+     "findings": [
+       {"title": "Only 3 indexable pages", "severity": "High", "description": "No pages target queries like retinol for teens or pregnancy-safe skincare.", "recommendation": "Publish 6-10 cited Q&A articles linking to the app."},
+       {"title": "Missing E-E-A-T signals for YMYL topic", "severity": "High", "description": "No author/reviewer, no About page, contact inbox not live.", "recommendation": "About page, dermatologist review with name and date, working email."}
+     ]},
+    {"name": "On-Page SEO", "score": 75,
+     "what_works": ["Title 58 chars", "Single H1", "Complete OG/Twitter cards"],
+     "findings": [
+       {"title": "Privacy/terms lack description and canonical", "severity": "Medium", "description": "No meta description or canonical on legal pages.", "recommendation": "Add both."},
+       {"title": "Product names as H2", "severity": "Low", "description": "Four hero product cards use H2 alongside section headings.", "recommendation": "Use H3 or plain text."},
+       {"title": "Meta description slightly long", "severity": "Low", "description": "161 characters.", "recommendation": "Trim to ~150."}
+     ]},
+    {"name": "Schema / Structured Data", "score": 45,
+     "what_works": ["Valid FAQPage matching visible questions"],
+     "findings": [
+       {"title": "No entity or app schema", "severity": "Medium", "description": "Only FAQPage, which rarely yields rich results for non-authoritative sites.", "recommendation": "Add Organization, WebSite, WebApplication; no ratings without real reviews."}
+     ]},
+    {"name": "Performance (CWV)", "score": 65,
+     "what_works": ["Single self-contained HTML, no third-party requests", "No horizontal overflow at 375px"],
+     "findings": [
+       {"title": "Heavy HTML with inline fonts", "severity": "Medium", "description": "274 KB HTML (92 KB gzip), 70 KB base64 fonts, 2,612 DOM nodes. CWV not measured (PSI 429).", "recommendation": "Move fonts to cached woff2, defer tab content, then measure with a PSI key."}
+     ]},
+    {"name": "AI Search Readiness", "score": 55,
+     "what_works": ["AI crawlers allowed", "Q&A formatted passages"],
+     "findings": [
+       {"title": "No brand entity yet", "severity": "Medium", "description": "Search returns no PearlKin results; competitors such as ShelfCheck and TopShelf exist.", "recommendation": "Directory listings, genuine community answers, optional llms.txt."}
+     ]},
+    {"name": "Images", "score": 70,
+     "what_works": ["og.png 1200x630 with alt"],
+     "findings": [
+       {"title": "Unlabelled inline SVG", "severity": "Low", "description": "84 of 130 inline SVGs neither labelled nor hidden.", "recommendation": "role=img + aria-label for meaningful art; aria-hidden for decoration."}
+     ]}
+  ],
+  "action_plan": {
+    "phases": [
+      {"name": "Phase 1: Critical Fixes", "timeframe": "Week 1", "items": ["Search Console", "Legal page canonical/description + 301", "JSON-LD entities", "Favicon files", "Caddy headers", "Sitemap lastmod"]},
+      {"name": "Phase 2: High-Impact Improvements", "timeframe": "Weeks 2-3", "items": ["About page", "Working contact email", "Dermatologist review", "Fonts as woff2", "SVG labelling"]},
+      {"name": "Phase 3: Content & Authority", "timeframe": "Month 2", "items": ["6-10 cited Q&A articles", "Brand mentions and directories", "Optional llms.txt"]},
+      {"name": "Phase 4: Monitoring & Iteration", "timeframe": "Ongoing", "items": ["Monthly Search Console review", "CWV measurement with PSI key"]}
+    ]
+  },
+  "artifacts": {"findings_dir": "findings/", "screenshots_dir": "screenshots/"}
+}

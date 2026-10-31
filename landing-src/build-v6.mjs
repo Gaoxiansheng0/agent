@@ -28,6 +28,13 @@ function build(file) {
   const faq = [...faqHtml.matchAll(/<details><summary[^>]*>(.*?)<svg.*?<\/summary><p[^>]*>(.*?)<\/p><\/details>/g)]
     .map(([, q, a]) => ({ '@type': 'Question', name: strip(q), acceptedAnswer: { '@type': 'Answer', text: strip(a) } }))
   html = html.replace('__FAQ_SCHEMA__', () => JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq }))
+  // Who runs the site and what the app is. No price or ratings: the web app is free only while testing, and there are no real reviews yet.
+  const site = 'https://pearlkin.pearlwren.com/', description = html.match(/<meta name="description" content="([^"]*)"/)?.[1]
+  html = html.replace('__SITE_SCHEMA__', () => JSON.stringify({ '@context': 'https://schema.org', '@graph': [
+    { '@type': 'Organization', '@id': `${site}#org`, name: 'PearlWren', url: site, logo: `${site}apple-touch-icon.png` },
+    { '@type': 'WebSite', '@id': `${site}#website`, name: 'PearlKin', url: site, inLanguage: 'en', publisher: { '@id': `${site}#org` } },
+    { '@type': 'WebApplication', '@id': `${site}#app`, name: 'PearlKin', url: `${site}app/`, description, applicationCategory: 'LifestyleApplication', operatingSystem: 'Any', browserRequirements: 'Requires JavaScript', publisher: { '@id': `${site}#org` } },
+  ] }))
   return html.replace('__ICONS__', () => icons(html))
 }
 
