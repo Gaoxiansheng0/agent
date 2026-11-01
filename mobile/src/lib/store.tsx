@@ -50,7 +50,7 @@ export function useStore() {
 
 /** Age in years from a birth year (birth year only: can be off by one, fine for age bands). */
 export const ageOf = (m: Pick<Member, 'birth_year'>) => (m.birth_year ? new Date().getFullYear() - m.birth_year : null)
-export const canSkinTest = (m: Member) => { const a = ageOf(m); return a === null || a >= 13 }
+export const canSkinTest = (m: Member) => { const a = ageOf(m); return a !== null && a >= 13 } // the server refuses people without a birth year
 
 /** The person as the rule engine sees them: entered concerns plus what their latest skin test showed. */
 export function engineMember(m: Member, latest?: ReportSummary): EngineMember {

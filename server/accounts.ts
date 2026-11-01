@@ -202,6 +202,7 @@ export function accountRoutes(app: Hono, d: AccountDeps) {
     const id = currentUser(c).id
     db.tx(() => {
       for (const t of ['sessions', 'members', 'user_products', 'skin_reports', 'advice']) db.run(`DELETE FROM ${t} WHERE user_id = ?`, id)
+      db.run('UPDATE ocr_logs SET user_id = NULL WHERE user_id = ?', id) // cost logs stay for accounting, unlinked from the person
       db.run('DELETE FROM users WHERE id = ?', id)
     })
     return c.json({ ok: true })

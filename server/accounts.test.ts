@@ -96,6 +96,10 @@ test('skin test: report saved, gated by subscription when the paywall is on, nev
   const kid = await s.req('POST', '/api/skin/analyze', { member_id: 'm_kid1234', image: 'AAAA' }, t)
   assert.equal(kid.status, 400)
   assert.equal((await kid.json()).code, 'under13')
+  await s.req('PUT', '/api/members/m_noyear1', { name: 'No year' }, t) // only possible through the API, the app requires a year
+  const noYear = await s.req('POST', '/api/skin/analyze', { member_id: 'm_noyear1', image: 'AAAA' }, t)
+  assert.equal((await noYear.json()).code, 'need_birth_year')
+  assert.equal(s.calls.length, 0) // neither request reached the model
 
   const r = await (await s.req('POST', '/api/skin/analyze', { member_id: 'm_me12345', image: 'AAAA', lang: 'zh-Hans',
     conditions: { makeup: 'light', light: 'indoor' }, answers: { after_wash: 'tzone', bogus: 'x' } }, t)).json()
@@ -147,6 +151,7 @@ test('account deletion removes everything', async () => {
   await s.req('POST', '/api/skin/analyze', { member_id: 'm_me12345', image: 'AAAA' }, t)
   assert.equal((await s.req('DELETE', '/api/me', undefined, t)).status, 200)
   for (const table of ['users', 'members', 'skin_reports', 'sessions']) assert.equal(s.db.get<{ n: number }>(`SELECT COUNT(*) AS n FROM ${table}`)!.n, 0, table)
+  assert.equal(s.db.get<{ n: number }>('SELECT COUNT(*) AS n FROM ocr_logs WHERE user_id IS NOT NULL')!.n, 0) // cost log kept, unlinked
 })
 
 test('report cleaning and derived concerns', () => {

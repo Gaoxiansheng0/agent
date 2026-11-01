@@ -196,7 +196,9 @@ export function skinRoutes(app: Hono, d: SkinDeps) {
       const member = memberOf(user, str(b.member_id, 40))
       if (!member) return c.json({ error: 'Choose who this skin test is for.' }, 400)
       const age = member.birth_year ? new Date(d.now()).getFullYear() - member.birth_year : null
-      if (age !== null && age < MIN_FACE_AGE) return c.json({ error: 'Skin tests are for ages 13 and up.', code: 'under13' }, 400)
+      // No birth year = we can't rule out a child, so no face analysis (the app always asks for it; this guards direct API calls).
+      if (age === null) return c.json({ error: 'Add a birth year for this person first.', code: 'need_birth_year' }, 400)
+      if (age < MIN_FACE_AGE) return c.json({ error: 'Skin tests are for ages 13 and up.', code: 'under13' }, 400)
       const image = typeof b.image === 'string' ? b.image.replace(/^data:[^,]*,/, '') : ''
       if (!image || !/^[A-Za-z0-9+/]+=*$/.test(image)) return c.json({ error: 'Take a photo first.' }, 400)
       if (!perUser(user.id)) return c.json({ error: "You've run a lot of skin tests today. Try again tomorrow." }, 429)

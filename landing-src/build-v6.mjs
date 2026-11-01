@@ -1,5 +1,5 @@
 // Build pearlkin/landing-v6: index.html and 404.html from the v6 templates, plus og.out.html for the share image.
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from 'node:fs'
 import { bottle, scene } from './v6/bottles.mjs'
 import { avatar, portrait } from './v6/portrait.mjs'
 import { report } from './v6/report.mjs'
@@ -8,8 +8,12 @@ const [, , scratch, out] = process.argv
 const src = f => readFileSync(`${scratch}/v6/${f}`, 'utf8')
 const b64 = f => readFileSync(`${scratch}/${f}`).toString('base64')
 const parts = Object.fromEntries([...src('parts.html').matchAll(/<!--([A-Z_]+)-->\n([\s\S]*?)(?=\n<!--)/g)].map(m => [m[1], m[2]]))
-const css = src('common.css').replace('__MANROPE__', () => b64('font/package/files/manrope-latin-wght-normal.woff2'))
-  .replace('__SOURCE_SANS__', () => b64('ssans/package/files/source-sans-3-latin-wght-normal.woff2'))
+const FONTS = { manrope: 'font/package/files/manrope-latin-wght-normal.woff2', 'source-sans-3': 'ssans/package/files/source-sans-3-latin-wght-normal.woff2' }
+// Site pages load /fonts/*.woff2 (cached for a year, preloaded in <head>); the share-image page is rendered from file://, so it inlines them.
+const fontSrc = (inline, name) => inline ? `data:font/woff2;base64,${b64(FONTS[name])}` : `/fonts/${name}.woff2`
+const cssFor = inline => src('common.css').replace('data:font/woff2;base64,__MANROPE__', () => fontSrc(inline, 'manrope'))
+  .replace('data:font/woff2;base64,__SOURCE_SANS__', () => fontSrc(inline, 'source-sans-3'))
+const PRELOAD = Object.keys(FONTS).map(n => `<link rel="preload" href="/fonts/${n}.woff2" as="font" type="font/woff2" crossorigin>`).join('\n')
 
 function icons(html) {
   const names = [...new Set([...html.matchAll(/#i-([a-z-]+)/g)].map(m => m[1]))]
@@ -19,8 +23,9 @@ function icons(html) {
   }).join('\n') + '\n</svg>'
 }
 function build(file) {
+  const inline = file === 'og.html'
   let html = src(file)
-    .replace('__HEAD_COMMON__', () => parts.HEAD_COMMON).replace('__CSS_COMMON__', () => css).replace('__FOOTER__', () => parts.FOOTER)
+    .replace('__HEAD_COMMON__', () => inline ? parts.HEAD_COMMON : PRELOAD + '\n' + parts.HEAD_COMMON).replace('__CSS_COMMON__', () => cssFor(inline)).replace('__FOOTER__', () => parts.FOOTER)
     .replace('__MENU_JS__', () => parts.MENU_JS).replace('__REPORT__', () => report()).replace('{{scene}}', () => scene()).replace(/{{avatar:([a-z]+)}}/g, (_, w) => avatar(w)).replace(/{{face:([a-z]+):([a-z]+)}}/g, (_, w, r) => portrait(w, { region: r, viewBox: '90 110 220 220' })).replace(/\{\{bottle:([a-z]+)\}\}/g, (_, k) => bottle(k))
   const strip = s => s.replace(/<[^>]+>/g, '').trim()
   // Only the FAQ list goes into the schema, not the other details on the page.
@@ -38,6 +43,7 @@ function build(file) {
   return html.replace('__ICONS__', () => icons(html))
 }
 
-mkdirSync(out, { recursive: true })
+mkdirSync(`${out}/fonts`, { recursive: true })
+for (const [n, f] of Object.entries(FONTS)) copyFileSync(`${scratch}/${f}`, `${out}/fonts/${n}.woff2`)
 for (const f of ['index.html', '404.html']) { const h = build(f); writeFileSync(`${out}/${f}`, h); console.log(f, h.length) }
 writeFileSync(`${scratch}/v6/og.out.html`, build('og.html'))

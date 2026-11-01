@@ -1,0 +1,19 @@
+# PearlKin
+
+> PearlKin is a skincare app: it starts from a selfie and a short questionnaire, describes visible skin condition for cosmetic purposes, and checks the skincare products you already own for you and the people you live with. It is not a medical device and does not diagnose skin conditions.
+
+## Key pages
+
+- [Home](https://pearlkin.pearlwren.com/): how the skin check, product notes and morning and night routines work, with an illustrated example report
+- [Privacy policy](https://pearlkin.pearlwren.com/privacy): what is sent to the AI model, what is stored, how to delete your data
+- [Terms](https://pearlkin.pearlwren.com/terms)
+
+## Key facts
+
+- Who it's for: people who want to know whether the skincare on their shelf suits them and their family
+- Skin checks from a photo are for ages 13 and up; younger children get product checks only, no face analysis
+- Up to 6 people per account
+- Platforms: web version in testing; the iPhone app is not out yet; no Android app yet
+- Pricing (iPhone app, not out yet): 3-day free trial, then $9.99 a month or $29.99 a year, renewing automatically; cancel in iPhone Settings › your name › Subscriptions
+- While testing, every feature of the web version is free
+- Contact: hello@pearlwren.com

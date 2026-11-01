@@ -32,7 +32,8 @@ echo "== test"
 echo "== build"
 (cd "$ROOT/mobile" && EXPO_PUBLIC_API_URL="https://$DOMAIN" EXPO_PUBLIC_SITE_URL="https://$DOMAIN" EXPO_PUBLIC_APP_TOKEN="$APP_TOKEN" \
   npx expo export --platform web --output-dir "$BUILD/site/app" --clear >/dev/null)
-cp "$ROOT"/landing/*.html "$ROOT"/landing/*.css "$ROOT"/landing/*.png "$ROOT"/landing/*.svg "$ROOT"/landing/*.ico "$ROOT"/landing/robots.txt "$ROOT"/landing/sitemap.xml "$BUILD/site/"
+cp "$ROOT"/landing/*.html "$ROOT"/landing/*.css "$ROOT"/landing/*.png "$ROOT"/landing/*.svg "$ROOT"/landing/*.ico "$ROOT"/landing/robots.txt "$ROOT"/landing/llms.txt "$ROOT"/landing/sitemap.xml "$BUILD/site/"
+mkdir -p "$BUILD/site/fonts" && cp "$ROOT"/landing/fonts/*.woff2 "$BUILD/site/fonts/"
 # Sitemap dates: the last commit that touched each page, or today when the page has uncommitted changes.
 (cd "$ROOT" && node -e '
 const fs = require("fs"), { execFileSync } = require("child_process"), file = process.argv[1]
@@ -140,6 +141,8 @@ $DOMAIN {
 		# File names aren't hashed, so static files get a week; HTML always revalidates (Caddy sends an Etag).
 		@static path *.png *.svg *.ico *.css
 		header @static Cache-Control "public, max-age=604800"
+		@fonts path /fonts/*.woff2
+		header @fonts Cache-Control "public, max-age=31536000, immutable"
 		header ?Cache-Control "no-cache"
 		try_files {path} {path}.html
 		file_server

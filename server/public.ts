@@ -124,7 +124,7 @@ export function publicRoutes(app: Hono, d: Deps) {
         started, d.ipHash(d.clientIp(c)), status, d.now() - started, usage.input, usage.output, ocrCost(usage, s), ingredients, error.slice(0, 300))
       const none = { input: 0, output: 0 }
 
-      const today = db.get<{ n: number }>('SELECT COUNT(*) AS n FROM ocr_logs WHERE ts >= ? AND status = 200', started - (started % DAY))!.n
+      const today = db.get<{ n: number }>("SELECT COUNT(*) AS n FROM ocr_logs WHERE kind = 'ocr' AND ts >= ? AND status = 200", started - (started % DAY))!.n
       if (today >= s.ocrDailyCap) {
         log(503, none, 0, 'daily cap reached')
         return c.json({ error: 'Photo reading is busy right now. Type the ingredients or try again tomorrow.' }, 503)
