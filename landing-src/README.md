@@ -34,4 +34,4 @@ node test/shot.mjs "file:///$(cygpath -m "$(pwd)")/v6/og.out.html" ../landing/og
 
 页面上每条事实和来源的核对记录见 `../docs/landing-claims.md`。
 
-**部署（2026-11-01 19:28）**：第二轮盘查的改动（无出生年份不能测肤、删号解除 OCR 日志关联、OCR 上限只算 OCR、首页 13 岁文案、字体拆文件、llms.txt）已用 `bash deploy/deploy.sh` 上线；部署前备份在服务器 `/root/backups/pearlkin-2026-11-01-192733`（网站、服务端代码、数据库 VACUUM INTO 快照、Caddy 配置）。线上核对：页面 / 字体（一年缓存）/ llms.txt / 404 / 健康检查正常，首页两种字体加载、无横向溢出、无控制台报错。未提交 git。
+**部署（2026-11-01 19:28）**：第二轮盘查的改动（无出生年份不能测肤、删号解除 OCR 日志关联、OCR 上限只算 OCR、首页 13 岁文案、字体拆文件、llms.txt）已用 `bash deploy/deploy.sh` 上线；部署前备份在服务器 `/root/backups/pearlkin-2026-11-01-192733`（网站、服务端代码、数据库 VACUUM INTO 快照、Caddy 配置）。线上核对：页面 / 字体（一年缓存）/ llms.txt / 404 / 健康检查正常，首页两种字体加载、无横向溢出、无控制台报错。已提交 28bed94（未推送）。
